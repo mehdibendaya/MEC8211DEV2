@@ -86,7 +86,7 @@ def Cac():
         writer = csv.writer(f)
         for element2, element1 in zip(C_num1, r):
             writer.writerow([element1, element2])
-    print(prm.dt)
+
 
 print("Veuillez attendre la vérification du code est en cours.")    
 unittest.main(module=__name__)  
