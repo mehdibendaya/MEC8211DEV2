@@ -45,7 +45,7 @@ class param():
     dr=0.005  #Pas en espace
     dt=0.5*dr**2/(D_eff*10) # Pas en temps
     n=int(R/dr)+1
-    err_t_tdt=10e-7 #Condition d'arret 
+    #err_t_tdt=10e-7 #Condition d'arret 
     k=4e-9   
     tf=10e6
     
@@ -65,23 +65,11 @@ def Cac():
     prm=param()
     r=np.linspace(0,prm.R,prm.n)
     prm.tf=tf=10e6
-    C_num1,tps1=PbF(prm)
-    # prm.tf=10e8
-    # C_num2,tps2=PbF(prm)
-    # prm.tf=10e9
-    # C_num3,tps3=PbF(prm)
+    C_num1,tps1=CAC_fct(prm)
     plt.plot(r,C_num1)
     plt.grid()
     
-    with open('10e7_D.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        for element2, element1 in zip(C_num1, r):
-            writer.writerow([element1, element2])
-    with open('10e8_D.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        for element2, element1 in zip(C_num1, r):
-            writer.writerow([element1, element2])
-    with open('10e9_D.csv', 'w', newline='') as f:
+    with open('1e7_D.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for element2, element1 in zip(C_num1, r):
             writer.writerow([element1, element2])
