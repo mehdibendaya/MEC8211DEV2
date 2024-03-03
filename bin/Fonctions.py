@@ -142,7 +142,20 @@ def CAC_fct(prm):
 # ============================================================================= 
 # ===========================      MMS 1   ====================================
 # ============================================================================= 
-
+def MMS_analy(prm):
+    """ Fonction qui calcule la solution MMS 
+    Entrée : 
+    - prm : classe contenant les donnees du probleme
+    Sortie :
+    - y : vecteur contenant la valeur numérique de la fonction 
+    - r : vecteur contenant le domaine descretise 
+    """
+    r = np.linspace(0, prm.R, prm.n)
+    
+    y=r*(prm.R-r)*np.exp(-prm.D_eff*prm.tf)
+    print(y)  
+    return r,y
+    
 def MMS_fct(prm):
     from time import time
     """ Fonction qui résout le systeme  pour le deuxième cas
@@ -187,7 +200,7 @@ def MMS_fct(prm):
     
     while t<prm.tf:
 
-        b[1:n-1]=-dt*prm.k*c_t[1:n-1]+c_t[1:n-1]
+        b[1:n-1]=-dt*(-np.exp(-D_eff*t)*(prm.R-r[1:n-1]+prm.R/r[1:n-1] -4)*D_eff)+c_t[1:n-1]
         b[0] = 0
         b[-1] = prm.Ce
         

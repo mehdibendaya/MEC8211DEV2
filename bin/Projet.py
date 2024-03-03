@@ -76,6 +76,25 @@ def Cac():
             writer.writerow([element1, element2])
 
 
+'''# ============================================================================= 
+# ============================= MMS ======================
+# ==========================================================================''' 
+    
+def MMS():    
+     
+    prm=param()
+    r=np.linspace(0,prm.R,prm.n)
+    prm.tf=tf=10e6
+    C_num1,tps1=MMS_fct(prm)
+    
+    r,C_analy=MMS_analy(prm)
+    
+    plt.plot(r,C_num1)
+    plt.plot(r,C_analy)
+    plt.grid()
+    
+
 print("Veuillez attendre la vérification du code est en cours.")    
 unittest.main(module=__name__)  
-Cac()
+# Cac()
+MMS()
