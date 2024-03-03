@@ -67,22 +67,10 @@ def Cac():
     r=np.linspace(0,prm.R,prm.n)
     prm.tf=tf=10e6
     C_num1,tps1=PbF(prm)
-    # prm.tf=10e8
-    # C_num2,tps2=PbF(prm)
-    # prm.tf=10e9
-    # C_num3,tps3=PbF(prm)
     plt.plot(r,C_num1)
     plt.grid()
     
-    with open('10e7_D.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        for element2, element1 in zip(C_num1, r):
-            writer.writerow([element1, element2])
-    with open('10e8_D.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        for element2, element1 in zip(C_num1, r):
-            writer.writerow([element1, element2])
-    with open('10e9_D.csv', 'w', newline='') as f:
+    with open('1e7_D.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for element2, element1 in zip(C_num1, r):
             writer.writerow([element1, element2])
