@@ -53,18 +53,18 @@ class param():
 
 # parametres modifiés pour la MMS
 class param2():
-    S=8      #Terme source [mol/m3/s]
+    S=8e-9    #Terme source [mol/m3/s]
     D=1         #Diametre de la colonne [m]
     R=D/2       #Rayon de la colonne [m]
     # Ce=12       #Concentration en sel de l'eau [mol/m3]
     Ce=0       #Condition de Dirichlet modifiée pour la MMS
-    D_eff=1e-1 #Coefficient de diffusion du sel dans le beton [m2/s]
+    D_eff=1e-10 #Coefficient de diffusion du sel dans le beton [m2/s]
     #Pour regime transitoire
     dr=0.01  #Pas en espace
     dt=0.5*dr**2/(D_eff*10) # Pas en temps
     n=int(R/dr)+1
     err_t_tdt=10e-7 #Condition d'arret
-    k=4
+    k=4e-9
     tf=1e9
 
 '''# ==========================================================================
@@ -103,9 +103,10 @@ def MMS():
     C_num1,tps1,r=MMS_fct(prm)
     
     r,C_analy=MMS_analy(prm)
-    
-    plt.plot(r,C_num1)
-    plt.plot(r,C_analy)
+    plt.figure()
+    plt.plot(r,C_num1,label='numerique')
+    plt.plot(r,C_analy,'--',label='analytique')
+    plt.legend()
     plt.grid()
     
 

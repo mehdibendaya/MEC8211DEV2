@@ -152,7 +152,7 @@ def MMS_analy(prm):
     """
     r = np.linspace(0, prm.R, prm.n)
     
-    y=r*(prm.R-r)*np.exp(-prm.D_eff*prm.tf)
+    y=(r**2)*(prm.R-r)*np.exp(-prm.tf*prm.D_eff)
     print(y)  
     return r,y
     
@@ -212,9 +212,9 @@ def MMS_fct(prm):
         t+=prm.dt
         tps.append(t)
         j+=1
-        if j%10000==0:
+        if j%100000==0:
             duration = time() - start
-            print(duration,err_t_tdt)
+            print(duration,t)
             start = time()
 
     return c_tdt,tps, r
