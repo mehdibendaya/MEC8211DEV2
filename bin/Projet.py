@@ -50,6 +50,23 @@ class param():
     tf=10e6
     
 
+
+# parametres modifiés pour la MMS
+class param2():
+    S=8      #Terme source [mol/m3/s]
+    D=1         #Diametre de la colonne [m]
+    R=D/2       #Rayon de la colonne [m]
+    # Ce=12       #Concentration en sel de l'eau [mol/m3]
+    Ce=0       #Condition de Dirichlet modifiée pour la MMS
+    D_eff=1e-1 #Coefficient de diffusion du sel dans le beton [m2/s]
+    #Pour regime transitoire
+    dr=0.01  #Pas en espace
+    dt=0.5*dr**2/(D_eff*10) # Pas en temps
+    n=int(R/dr)+1
+    err_t_tdt=10e-7 #Condition d'arret
+    k=4
+    tf=1e9
+
 '''# ==========================================================================
 # =============================================================================
 # ============================  Schema d'ordre 2  =============================
@@ -81,10 +98,9 @@ def Cac():
     
 def MMS():    
      
-    prm=param()
+    prm=param2()
     r=np.linspace(0,prm.R,prm.n)
-    prm.tf=tf=10e6
-    C_num1,tps1=MMS_fct(prm)
+    C_num1,tps1,r=MMS_fct(prm)
     
     r,C_analy=MMS_analy(prm)
     

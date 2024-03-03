@@ -106,7 +106,7 @@ def CAC_fct(prm):
     
     for i in range(1, prm.n-1):
         A[i, i+1] = -dt_D_eff*(dr_inv/r[i]+dr2_inv)
-        A[i, i] = 1+dt_D_eff*(2*dr2_inv)
+        A[i, i] = 1+dt_D_eff*(2*dr2_inv)+prm.k*dt
         A[i, i-1] = -dt*D_eff*(dr2_inv-dr_inv/r[i])
     #Condition de Dirichlet
     A[-1, -1] = 1 
@@ -188,7 +188,7 @@ def MMS_fct(prm):
     
     for i in range(1, prm.n-1):
         A[i, i+1] = -dt_D_eff*(dr_inv/r[i]+dr2_inv)
-        A[i, i] = 1+dt_D_eff*(2*dr2_inv)
+        A[i, i] = 1+dt_D_eff*(2*dr2_inv)+prm.k*dt
         A[i, i-1] = -dt*D_eff*(dr2_inv-dr_inv/r[i])
     #Condition de Dirichlet
     A[-1, -1] = 1 
@@ -197,25 +197,25 @@ def MMS_fct(prm):
     A[0, 1] = 4
     A[0, 2] = -1
     
-    
+    j=0
+    start=time()
     while t<prm.tf:
-
-        b[1:n-1]=-dt*(-np.exp(-D_eff*t)*(prm.R-r[1:n-1]+prm.R/r[1:n-1] -4)*D_eff)+c_t[1:n-1]
+        b[1:n-1]= dt*(D_eff*np.exp(-D_eff*t)*((prm.k/D_eff-1)*(r[1:n-1]**2)*(prm.R-r[1:n-1])-4*prm.R+9*r[1:n-1])) +c_t[1:n-1]
         b[0] = 0
         b[-1] = prm.Ce
-        
+
         # Résolution du système matriciel
         c_tdt = np.linalg.solve(A, b)
 
         c_t[:]=c_tdt[:]
-        
+
         t+=prm.dt
         tps.append(t)
-        i+=1
-        if i%10000==0:
+        j+=1
+        if j%10000==0:
             duration = time() - start
             print(duration,err_t_tdt)
             start = time()
 
-    return c_tdt,tps
+    return c_tdt,tps, r
 
