@@ -74,7 +74,76 @@ def droite(a,b,x):
 # ===================== Comparaison code à code ===============================
 # ============================================================================= 
 
-def PbF(prm):
+def CAC_fct(prm):
+    from time import time
+    """ Fonction qui résout le systeme  pour le deuxième cas
+    Entrées:
+        - prm : vecteur contenant la position 
+
+    Sorties :
+        - c_tdt : Matrice (array) qui contient la solution numérique la plus a jour
+        - tps : vecteur (liste) qui contient les différents temps de résolution"""        
+
+    dr = prm.dr #Pas en espace
+    dt = prm.dt #Pas en temps
+    D_eff=prm.D_eff 
+    n  = prm.n  #Nombre de noeuds
+    r = np.linspace(0, prm.R, n) #Discrétisation en espace
+    A = np.zeros([prm.n, prm.n]) #Matrice A
+    b = np.zeros(prm.n) #Vecteur b
+    t=0         #Temps intial
+    tps=[0]
+    err_t_tdt=10 #Initialisation de l'erreur
+    # Initialisation de c_t
+    c_t=np.ones(n)
+    c_t[:-1] = [0 for i in range(n-1)]
+    c_t[-1]=prm.Ce
+
+    # Remplissage du centre de la matrice A et du vecteur b    
+    dr_inv=0.5/dr
+    dt_D_eff=dt*D_eff
+    dr2_inv=1/dr**2
+    
+    for i in range(1, prm.n-1):
+        A[i, i+1] = -dt_D_eff*(dr_inv/r[i]+dr2_inv)
+        A[i, i] = 1+dt_D_eff*(2*dr2_inv)
+        A[i, i-1] = -dt*D_eff*(dr2_inv-dr_inv/r[i])
+    #Condition de Dirichlet
+    A[-1, -1] = 1 
+    #Condition de Neumann
+    A[0, 0] = -3
+    A[0, 1] = 4
+    A[0, 2] = -1
+    
+    
+    while t<prm.tf:
+
+        b[1:n-1]=-dt*prm.k*c_t[1:n-1]+c_t[1:n-1]
+        b[0] = 0
+        b[-1] = prm.Ce
+        
+        # Résolution du système matriciel
+        c_tdt = np.linalg.solve(A, b)
+
+        c_t[:]=c_tdt[:]
+        
+        t+=prm.dt
+        tps.append(t)
+        i+=1
+        if i%10000==0:
+            duration = time() - start
+            print(duration,err_t_tdt)
+            start = time()
+
+    return c_tdt,tps
+
+
+
+# ============================================================================= 
+# ===========================      MMS 1   ====================================
+# ============================================================================= 
+
+def MMS_fct(prm):
     from time import time
     """ Fonction qui résout le systeme  pour le deuxième cas
     Entrées:
