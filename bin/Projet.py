@@ -95,15 +95,10 @@ def Cac():
 '''# ============================================================================= 
 # ===================================== MMS ====================================
 # ==========================================================================''' 
-    
+#########################CONVERGENCE EN ESPACE#################################    
 def MMS_Conv_Espace():    
-
-
      
-    prm=param2()
-
-#########################CONVERGENCE EN ESPACE#################################
-    
+    prm=param2()   
  # Initialisation des vecteurs
     erreur_L1 = []
     erreur_L2 = []
@@ -114,7 +109,7 @@ def MMS_Conv_Espace():
     # Initialisation des paramètres
     prm = param2()  
     dr_testee=[0.2,0.1,0.05,0.01,0.005]
-    n_testee=[0.2,0.1,0.05,0.01,0.005]
+    n_testee=[]
 
     # Calcul de de l'erreur
     for dr in dr_testee:
@@ -208,7 +203,7 @@ def MMS_Conv_temps():
     
     # Initialisation des paramètres
     prm = param2()  
-    dt_testee=[1e8,1e7,1e6,1e5,50000,100000]
+    dt_testee=[1e8,1e7,1e6,1e5,50000]
 
 
     # Calcul de de l'erreur
