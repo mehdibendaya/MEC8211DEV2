@@ -152,7 +152,6 @@ def MMS_analy(prm):
     r = np.linspace(0, prm.R, prm.n)
     
     y=(r**2)*(prm.R-r)*np.exp(-prm.tf*prm.D_eff)
-    print(y)  
     return r,y
     
 def MMS_fct(prm):
