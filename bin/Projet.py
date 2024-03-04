@@ -92,8 +92,8 @@ def Cac():
             writer.writerow([element1, element2])
 
 
-'''# ============================================================================= 
-# ============================= MMS ======================
+'''# ========================================================================= 
+# ================================ MMS =======================================
 # ==========================================================================''' 
     
 def MMS():    
@@ -105,12 +105,13 @@ def MMS():
     r,C_analy=MMS_analy(prm)
     plt.figure()
     plt.plot(r,C_num1,label='numerique')
-    plt.plot(r,C_analy,'--',label='analytique')
+    plt.plot(r,C_analy,'--',label='MMS analytique')
     plt.legend()
     plt.grid()
+    plt.show()
     
 
 print("Veuillez attendre la vérification du code est en cours.")    
-unittest.main(module=__name__)  
+# unittest.main(module=__name__)  
 # Cac()
 MMS()
