@@ -29,7 +29,6 @@ class param():
 prm=param()
 
 #solution MMS
-T0 = 10. ; T1 = 2. ; T2 = 3.  ; T3 = 4.
 C_MMS=r*(1-r)*sp.exp(-t*prm.D_eff)
 # create callable function for symbolic expression
 f_C_MMS = sp.lambdify([r,t], C_MMS, "numpy")

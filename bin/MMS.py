@@ -23,14 +23,27 @@ class param2():
     dr=0.01  #Pas en espace
     dt=0.5*dr**2/(D_eff*10) # Pas en temps
     n=int(R/dr)+1
-    nt=5
     err_t_tdt=10e-7 #Condition d'arret
     k=4e-9
     tf=1e9
+    nt=5
+    # nt=int(tf/(10000*dt))+1 # hardcoding pour resultats rapide : fonctionne pour tf=1e9 avec nt=5,6,9 noeuds car donne des valeurs de temps qui sont des multiples de dt
 
 prm=param2()
 
-def MMS_diffusion(prm,rdom,tdom):
+def MMS_analy(prm,rdom,tdom):
+    """ Fonction qui calcule la solution MMS "analytiquement" 
+    Entrée : 
+        - prm : classe contenant les donnees du probleme
+        - rdom : vecteur de discretisation en espace
+        - tdom : vecteur de discretisation en temps
+
+    Sortie :
+        - z_MMS : vecteur contenant la valeur numérique de la fonction MMS en chaque noeud
+        - z_source : vecteur contenant la valeur numérique du terme source en chaque noeud
+        - f_source :  fonction "callable" du terme source
+
+    """
 
     r,t=sp.symbols('r t')
 
@@ -78,24 +91,29 @@ def MMS_diffusion(prm,rdom,tdom):
 # ============================= Regime transitoire ============================
 # =============================================================================
 
-def MMS_fct(prm, tdom):
+def MMS_fct(prm,rdom,tdom):
+    from time import time
     from time import time
     """ Fonction qui résout le systeme  pour le deuxième cas
     Entrées:
-        - prm : vecteur contenant la position 
+        - prm : classe contenant les donnees du probleme
+        - tdom : vecteur de discretisation en temps
 
     Sorties :
-        - c_tdt : Matrice (array) qui contient la solution numérique la plus a jour
-        - tps : vecteur (liste) qui contient les différents temps de résolution"""        
+        - c_globalc_tdt : Matrice (array) qui contient la solution numérique la plus a jour
+        - tps : vecteur (liste) qui contient les différents temps de résolution
+        - r : vecteur de discretisation en espace
+    """            
 
     dr = prm.dr #Pas en espace
     dt = prm.dt #Pas en temps
+    print ("dt=",dt)
     D_eff=prm.D_eff 
     n  = prm.n  #Nombre de noeuds
-    r = np.linspace(0, prm.R, n) #Discrétisation en espace
+    r = rdom#Discrétisation en espace
     A = np.zeros([prm.n, prm.n]) #Matrice A
     b = np.zeros(prm.n) #Vecteur b
-    t=0         #Temps intial
+    t=0         #Temps initial
     tps=[0]
     err_t_tdt=10 #Initialisation de l'erreur
     # Initialisation de c_t
@@ -119,7 +137,7 @@ def MMS_fct(prm, tdom):
     A[0, 0] = -3
     A[0, 1] = 4
     A[0, 2] = -1
-    g,gg,ggg=MMS_diffusion(prm,r,tdom)
+    g,gg,ggg=MMS_analy(prm,r,tdom)
     j=0
     start=time()
     while t<=prm.tf:
@@ -134,6 +152,7 @@ def MMS_fct(prm, tdom):
         c_tdt = np.linalg.solve(A, b)
         if t in tdom:
             c_global.append(list(c_tdt))
+            print("C_GLOBAL=",len(c_global))
             # print("C_GLOBAL=",c_global)
         c_t[:]=c_tdt[:]
 
@@ -150,17 +169,12 @@ def MMS_fct(prm, tdom):
 
 
 #Visualiser les fonctions sur un maillage
-# taille du domaine
-rmin = 0
-rmax = prm.R
-tmin = 0
-tmax = prm.tf
 # Discretisation du domaine
-rdom = np.linspace(rmin,rmax,prm.n)
-tdom = np.linspace(tmin,tmax,prm.nt)
+rdom = np.linspace(0,prm.R,prm.n)
+tdom = np.linspace(0,prm.tf,prm.nt)
 
-z_MMS, z_source,g=MMS_diffusion(prm,rdom,tdom)
-concentration, temps, rayon=MMS_fct(prm, tdom)
+z_MMS, z_source,g=MMS_analy(prm,rdom,tdom)
+concentration, temps, rayon=MMS_fct(prm, rdom, tdom)
 
 # Plot the results
 for j in range(len(tdom)):
