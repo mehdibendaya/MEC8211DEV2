@@ -8,20 +8,24 @@
 # =============================================================================
 
 # -*- coding: utf-8 -*-
-''' Ce code permet de resoudre l'equation de diffusion de sel dans le beton par la MDF.
-Le projet se divise 4 sous-programmes appelés du fichier Fonctions.py:
-    - PartieE() : Schema d'ordre 1 resolvant le systeme transitoire 
-    - PartieE_S() : Schema d'ordre 1 resolvant le systeme stationnaire
-    - PartieF() : Schema d'ordre 2 resolvant le systeme transitoire 
-    - PartieF_S() : Schema d'ordre 2 resolvant le systeme stationnaire
+''' Ce code permet de faire la verification de l'equation de diffusion de sel avec terme source non constant.
+Le projet se divise 4 sous-programmes de verification appelant des fonctions du fichier Fonctions.py:
+    - Cac() : Effectue la verification code à code avec les resultats obtenus de COMSOL
+    -   MMS_Conv_Espace(): Effectue une etude de convergence (calcul des erreurs L1, L2, L_infet la regression en loi de puissance)
+        en raffinant les pas en espace pour un pas de temps fixe.
+    -   MMS_Conv_Temps(): Effectue une etude de convergence (calcul des erreurs L1, L2, L_inf
+        et la regression en loi de puissance) en raffinant les pas en temps pour un pas en espace fixe.
+    -   Comparaison_MMS(): superpose les courbes de la solution manufcturée avec celles de la solution numerique qui contient
+        le terme source obtenu par MMS
+
     '''
 from os import environ
 from time import time
 from math import log
 import numpy as np
+import sympy as sp
 import matplotlib.pyplot as plt
 from Fonctions import *
-from Tests_unitaires import *
 import unittest
 import csv
 
@@ -34,7 +38,7 @@ environ['VECLIB_MAXIMUM_THREADS'] = N_THREADS
 environ['NUMEXPR_NUM_THREADS'] = N_THREADS
 
 
-'''Creation d'une classe qui servira pour tous les cas  La classe pourra etre modifier au besoin'''
+'''Creation d'une classe qui servira pour tous les cas. La classe pourra etre modifiee au besoin'''
 class param():
     S=8e-9      #Terme source [mol/m3/s]
     D=1         #Diametre de la colonne [m]
@@ -51,14 +55,15 @@ class param():
     
 
 
-# parametres modifiés pour la MMS
+'''parametres modifiés pour la MMS'''
 class param2():
     S=8e-9      #Terme source [mol/m3/s]
     D=1         #Diametre de la colonne [m]
     R=D/2       #Rayon de la colonne [m]
-    # Ce=12       #Concentration en sel de l'eau [mol/m3]
-    Ce=0       #Condition de Dirichlet modifiée pour la MMS
+    # Ce=12     #Concentration en sel de l'eau [mol/m3]
+    Ce=0        #Condition de Dirichlet modifiée pour la MMS
     D_eff=1e-10 #Coefficient de diffusion du sel dans le beton [m2/s]
+
     #Pour regime transitoire
     dr=0.01  #Pas en espace
     dt=0.5*dr**2/(D_eff*10) # Pas en temps
@@ -69,15 +74,17 @@ class param2():
     nt=5 # hardcoding pour resultats rapide : fonctionne pour tf=1e9 avec nt=5,6,9 noeuds car donne des valeurs de temps qui sont des multiples de dt
     # nt=int(tf/(10000*dt))+1 
 
-'''# ==========================================================================
+'''
 # =============================================================================
-# ============================  Schema d'ordre 2  =============================
+# =============================================================================
+# ===========================  Schema d'ordre 2  ==============================
 # =============================================================================
 # =============================================================================
 
 # ============================================================================= 
-# ============================= Vérification code à code ======================
-# ==========================================================================''' 
+# ======================== Vérification code à code ===========================
+# =============================================================================
+''' 
     
 def Cac():    
      
@@ -178,8 +185,10 @@ def Cac():
 # ========================================================================================================''' 
 #############################################################################################################
 ########################################  CONVERGENCE EN ESPACE  ############################################   
+
 def MMS_Conv_Espace():    
        
+
  # Initialisation des vecteurs
     erreur_L1 = []
     erreur_L2 = []
@@ -201,18 +210,18 @@ def MMS_Conv_Espace():
         prm.dr=dr
         prm.n=int(prm.R/dr)+1
         rdom = np.linspace(0,prm.R,prm.n)
-        # print("Rdom=",rdom)
+        # print("Rdom=",rdom) # debug
         C_analy,z_source, f_source=MMS_analy(prm,rdom,tdom)
         C_num,tps,r=MMS_fct(prm,rdom,tdom) 
-        # print("Canalyt=",C_analy)
-        # print("Cnum=",C_num)
+        # print("Canalyt=",C_analy) # debug
+        # print("Cnum=",C_num) # debug
         
         c_ordre2.append(C_num[-1])
         r_ordre2.append(r)
         n_testee.append(prm.n)
  
-        # print("C_num[-1]=",C_num[-1])
-        # print("C_analy[-1]=",C_analy[-1])
+        # print("C_num[-1]=",C_num[-1]) # debug
+        # print("C_analy[-1]=",C_analy[-1]) # debug
         epsilon_h=C_num[-1]-C_analy[-1]
         
         erreur_L1.append(np.sum(abs(epsilon_h))/len(epsilon_h))
@@ -222,7 +231,8 @@ def MMS_Conv_Espace():
     C_analy,z_source, f_source=MMS_analy(prm,rdom,tdom)
 
         
-    # Graphiques
+    ### Graphiques
+    ### FIG 1: Erreurs L1, L2 et L_inf sur echelle log/log
     plt.figure(1)
     plt.loglog(dr_testee,erreur_L1,'x-',label='$L_1$')  
     plt.loglog(dr_testee,erreur_L2,'x-',label='$L_2$')
@@ -236,7 +246,8 @@ def MMS_Conv_Espace():
     plt.title(f"Convergence de l'erreur en fonction de $\Delta$r à $t={tdom[-1]}$ sec.")
     # plt.savefig('Ordre2_Conv_dr', dpi=1000)
     
-   
+
+    ### FIG 2: Supersposition solution analytique MMS et solution numerique avec terme source
     plt.figure(2)
     for i in range(len(c_ordre2)):
         lab='$\Delta$r='+str(dr_testee[i])+"/ $N_{points}$="+str(n_testee[i])
@@ -250,7 +261,8 @@ def MMS_Conv_Espace():
     plt.title(f"Profil de concentration en fonction de $r$ à $t={tdom[-1]}$ sec.")
     # plt.savefig('Ordre2_C_dr', dpi=1000)
 
-    
+
+    ### FIG 3: Etude de convergence et loi de regression
     plt.figure(3)
     a,b = np.polyfit(np.log(dr_testee[-4:]), np.log(erreur_L2[-4:]), 1)
     # Fonction de régression en termes de logarithmes
@@ -258,7 +270,6 @@ def MMS_Conv_Espace():
 
     # Fonction de régression en termes originaux
     fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
  
     plt.loglog(dr_testee,erreur_L2,'o',label="L2")
     plt.plot(dr_testee, fit_function(dr_testee), linestyle='--', color='r', label='Régression en loi de puissance')
@@ -286,8 +297,10 @@ def MMS_Conv_Espace():
 
 #############################################################################################################
 ########################################  CONVERGENCE EN TEMPS  #############################################
+    
 
 def MMS_Conv_Temps(): 
+
     
     # Initialisation des vecteurs
     erreur_L1 = []
@@ -326,8 +339,8 @@ def MMS_Conv_Temps():
     C_analy,z_source, f_source=MMS_analy(prm,rdom,tdom)
 
         
-    # Graphiques
-    # Erreurs L1, L2 et L_inf sur echelle log/log
+    ### Graphiques
+    ### FIG 1: Erreurs L1, L2 et L_inf sur echelle log/log
     plt.figure(1)
     plt.loglog(dt_testee,erreur_L1,'x-',label='$L_1$')  
     plt.loglog(dt_testee,erreur_L2,'x-',label='$L_2$')
@@ -341,7 +354,8 @@ def MMS_Conv_Temps():
     plt.title(f"Convergence de l'erreur en fonction de $\Delta$t pour $\Delta$r={prm.dr}")
     # plt.savefig('Ordre2_Conv_dt', dpi=1000)
     
-   
+
+    ### FIG 2: Supersposition solution analytique MMS et solution numerique avec terme source
     plt.figure(2)
     for i in range(len(c_ordre2)):
         lab='$\Delta$t='+str(dt_testee[i])
@@ -356,6 +370,7 @@ def MMS_Conv_Temps():
     # plt.savefig('Ordre2_C_dt', dpi=1000)
 
     
+    ### FIG 3: Etude de convergence et loi de regression
     plt.figure(3)
     a,b = np.polyfit(np.log(dt_testee[-4:]), np.log(erreur_L2[-4:]), 1)
     # Fonction de régression en termes de logarithmes
@@ -364,14 +379,12 @@ def MMS_Conv_Temps():
     # Fonction de régression en termes originaux
     fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
- 
     plt.loglog(dt_testee,erreur_L2,'o',label="L2")
     plt.plot(dt_testee, fit_function(dt_testee), linestyle='--', color='r', label='Régression en loi de puissance')
     plt.tick_params(width=1.5, which='both', direction='in', top=True, right=True, length=5)
     plt.gca().invert_xaxis()
     plt.grid()
  
-
     # Ajouter des étiquettes et un titre au graphique
     plt.title('Convergence d\'ordre 2\n de l\'erreur $L_2$ en fonction de $Δt$',fontsize=12, y=1.02)  # Le paramètre y règle la position verticale du titre
     plt.xlabel('$Δt$ [s]', fontsize=10)
@@ -389,6 +402,73 @@ def MMS_Conv_Temps():
 
 print("Veuillez attendre la vérification du code est en cours.")    
 # unittest.main(module=__name__)  
-Cac()
+
+
+
+#############################################################################################################
+#############################  Comapraison MMS/MDF avec terme source MMS  ###################################
+
+def Comparaison_MMS():
+
+    prm=param2()
+   
+    # Discretisation du domaine
+    rdom = np.linspace(0,prm.R,prm.n)
+    tdom = np.linspace(0,prm.tf,prm.nt)
+
+    # Calcul de la solution MMS "analytique"
+    z_MMS, z_source,g=MMS_analy(prm,rdom,tdom)
+    
+    # Calcul de la solution par MDF incorporant la MMS
+    concentration, temps, rayon=MMS_fct(prm, rdom, tdom)
+
+    # Afficher les resultats
+    for j in range(len(tdom)):
+        # print("RDOM=",rdom)  # debug
+        # print("Z=",z_MMS[j,:]) # debug
+        plt.figure(1)
+        plt.plot(rdom,z_MMS[j,:], label=f"t={tdom[j]} sec")
+        plt.legend()
+        plt.xlabel("r [m]")
+        plt.ylabel("C [mol/$m^{3}$]")
+        plt.grid()
+        plt.title('Fonction MMS')
+
+        plt.figure(2)
+        plt.plot(rdom,z_source[j,:], label=f"t={tdom[j]} sec")
+        plt.legend()
+        plt.xlabel("r [m]")
+        plt.ylabel("C [mol/$m^{3}$]")
+        plt.grid()
+        plt.title('Terme source')
+
+
+        plt.figure(3)
+        plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec")
+        plt.legend()
+        plt.xlabel("r [m]")
+        plt.ylabel("C [mol/$m^{3}$]")
+        plt.grid()
+        plt.title('Application MMS au code')
+
+        plt.figure(4)
+        plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec (num.)")
+        plt.plot(rdom,z_MMS[j,:], '--', label=f"t={tdom[j]} sec (MMS)", linewidth=3)
+        plt.legend()
+        plt.xlabel("r [m]")
+        plt.ylabel("C [mol/$m^{3}$]")
+        plt.grid()
+        plt.title('Superposition MMS et solution numérique')
+
+    plt.show()
+
+
+
+'''================================================================================================================================
+==============================  Zone d'appel pour  l'execution des differentes fonctions  =========================================
+================================================================================================================================'''
+    
+# Cac()
 # MMS_Conv_Espace()
 # MMS_Conv_Temps()
+Comparaison_MMS()

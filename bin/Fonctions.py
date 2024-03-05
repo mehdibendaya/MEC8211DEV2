@@ -1,6 +1,6 @@
 # =============================================================================
 # =============================================================================
-# ============ MEC 8211 - DEVOIR 1 - Verification de code - H24 ===============
+# ============ MEC 8211 - DEVOIR 2 - Verification de code - H24 ===============
 # Redigé par:
 # Mohammed Mahdi Sahbi Ben Daya
 # Acile Sfeir
@@ -140,9 +140,11 @@ def CAC_fct(prm):
 
 
 # ============================================================================= 
-# ===========================      MMS 1   ====================================
+# ===========================      MMS     ====================================
 # ============================================================================= 
+
 def MMS_analy(prm,rdom,tdom):
+
     """ Fonction qui calcule la solution MMS "analytiquement"
     Entrée : 
         - prm : classe contenant les donnees du probleme
@@ -152,9 +154,9 @@ def MMS_analy(prm,rdom,tdom):
     Sortie :
         - z_MMS : vecteur contenant la valeur numérique de la fonction MMS en chaque noeud
         - z_source : vecteur contenant la valeur numérique du terme source en chaque noeud
-        - f_source :  fonction "callable" du terme source
+        - f_source :  fonction "callable" du terme source """
 
-    """
+
     r,t=sp.symbols('r t')
 
     R=prm.R
@@ -188,6 +190,7 @@ def MMS_analy(prm,rdom,tdom):
 
     
 def MMS_fct(prm,rdom, tdom):
+
     from time import time
     """ Fonction qui résout le systeme  pour le deuxième cas
     Entrées:
@@ -200,7 +203,6 @@ def MMS_fct(prm,rdom, tdom):
         - r : vecteur de discretisation en espace
     """     
       
-       
 
     dr = prm.dr #Pas en espace
     dt = prm.dt #Pas en temps
@@ -245,7 +247,7 @@ def MMS_fct(prm,rdom, tdom):
         c_tdt = np.linalg.solve(A, b)
         if t in tdom:
             c_global.append(list(c_tdt))
-            # print("C_GLOBAL=",c_global)
+            # print("C_GLOBAL=",c_global)  # debug
         c_t[:]=c_tdt[:]
 
         t+=prm.dt

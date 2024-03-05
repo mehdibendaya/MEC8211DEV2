@@ -177,7 +177,7 @@ z_MMS, z_source,g=MMS_analy(prm,rdom,tdom)
 concentration, temps, rayon=MMS_fct(prm, rdom, tdom)
 
 # Plot the results
-for j in range(10,len(tdom)):
+for j in range(len(tdom)):
     # print("XDOM=",rdom)
     # print("Z=",z_MMS[j,:])
     # plt.figure(1)
