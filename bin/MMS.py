@@ -25,9 +25,9 @@ class param2():
     n=int(R/dr)+1
     err_t_tdt=10e-7 #Condition d'arret
     k=4e-9
-    tf=1e9
-    nt=5
-    # nt=int(tf/(10000*dt))+1 # hardcoding pour resultats rapide : fonctionne pour tf=1e9 avec nt=5,6,9 noeuds car donne des valeurs de temps qui sont des multiples de dt
+    tf=1e10
+    # nt=5
+    nt=int(tf/(10000*dt))+1 # hardcoding pour resultats rapide : fonctionne pour tf=1e9 avec nt=5,6,9 noeuds car donne des valeurs de temps qui sont des multiples de dt
 
 prm=param2()
 
@@ -177,30 +177,42 @@ z_MMS, z_source,g=MMS_analy(prm,rdom,tdom)
 concentration, temps, rayon=MMS_fct(prm, rdom, tdom)
 
 # Plot the results
-for j in range(len(tdom)):
+for j in range(10,len(tdom)):
     # print("XDOM=",rdom)
     # print("Z=",z_MMS[j,:])
-    plt.figure(1)
-    plt.plot(rdom,z_MMS[j,:], label=f"t={tdom[j]} sec")
-    plt.legend()
-    plt.title('Fonction MMS')
+    # plt.figure(1)
+    # plt.plot(rdom,z_MMS[j,:], label=f"t={tdom[j]} sec")
+    # plt.legend()
+    # plt.xlabel("r [m]")
+    # plt.ylabel("C [mol/$m^{3}$]")
+    # plt.grid()
+    # plt.title('Fonction MMS')
 
-    plt.figure(2)
-    plt.plot(rdom,z_source[j,:], label=f"t={tdom[j]} sec")
-    plt.legend()
-    plt.title('Terme source')
+    # plt.figure(2)
+    # plt.plot(rdom,z_source[j,:], label=f"t={tdom[j]} sec")
+    # plt.legend()
+    # plt.xlabel("r [m]")
+    # plt.ylabel("C [mol/$m^{3}$]")
+    # plt.grid()
+    # plt.title('Terme source')
 
 
-    plt.figure(3)
-    plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec")
-    plt.legend()
-    plt.title('Application MMS au code')
+    # plt.figure(3)
+    # plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec")
+    # plt.legend()
+    # plt.xlabel("r [m]")
+    # plt.ylabel("C [mol/$m^{3}$]")
+    # plt.grid()
+    # plt.title('Application MMS au code')
 
     plt.figure(4)
-    plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec")
-    plt.plot(rdom,z_MMS[j,:], '--', label=f"t={tdom[j]} sec")
+    plt.plot(rdom,concentration[j], label=f"t={tdom[j]} sec (num.)")
+    plt.plot(rdom,z_MMS[j,:], '--', label=f"t={tdom[j]} sec (MMS)", linewidth=3)
     plt.legend()
-    plt.title('Superposition MMS et solution numerique')
+    plt.xlabel("r [m]")
+    plt.ylabel("C [mol/$m^{3}$]")
+    plt.grid()
+    plt.title('Superposition MMS et solution numérique')
 
 plt.show()
 
