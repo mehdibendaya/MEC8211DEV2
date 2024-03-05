@@ -115,7 +115,7 @@ def CAC_fct(prm):
     A[0, 1] = 4
     A[0, 2] = -1
     
-    
+    start=time()
     while t<prm.tf:
 
         b[1:n-1]=-dt*prm.k*c_t[1:n-1]+c_t[1:n-1]

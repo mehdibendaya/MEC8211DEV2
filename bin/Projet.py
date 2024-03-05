@@ -42,12 +42,12 @@ class param():
     Ce=12       #Concentration en sel de l'eau [mol/m3]
     D_eff=1e-10 #Coefficient de diffusion du sel dans le beton [m2/s]
     #Pour regime transitoire    
-    dr=0.005  #Pas en espace
+    dr=0.001  #Pas en espace
     dt=0.5*dr**2/(D_eff*10) # Pas en temps
     n=int(R/dr)+1
     #err_t_tdt=10e-7 #Condition d'arret 
     k=4e-9   
-    tf=10e6
+    tf=10e9
     
 
 
@@ -82,16 +82,95 @@ class param2():
 def Cac():    
      
     prm=param()
-    r=np.linspace(0,prm.R,prm.n)
-    prm.tf=tf=10e6
-    C_num1,tps1=CAC_fct(prm)
-    plt.plot(r,C_num1)
+    
+    prm.tf=tf=10e8
+    
     plt.grid()
     
-    with open('1e7_D.csv', 'w', newline='') as f:
+    
+    prm.dr=0.001
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.001)
+    plt.plot(r,C_num1,label=lab)
+    with open('0.001_D.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for element2, element1 in zip(C_num1, r):
             writer.writerow([element1, element2])
+            
+    prm.dr=0.002
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.002)
+    plt.plot(r,C_num1,label=lab)
+    with open('0.002_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])        
+    
+    
+    prm.dr=0.005
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.005)
+    plt.plot(r,C_num1,label=lab)
+    with open('0.005_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])
+    
+    prm.dr=0.01
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.01)
+    plt.plot(r,C_num1,label=lab)      
+    with open('0.01_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])
+            
+    prm.dr=0.02
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.02)
+    plt.plot(r,C_num1,label=lab)        
+    with open('0.02_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])   
+            
+    prm.dr=0.05
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.05)
+    plt.plot(r,C_num1,label=lab)      
+    with open('0.05_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])  
+            
+    prm.dr=0.1
+    prm.n=int(prm.R/prm.dr)+1
+    r=np.linspace(0,prm.R,prm.n)
+    C_num1,tps1=CAC_fct(prm)
+    lab='$\Delta$r='+str(0.1)
+    plt.plot(r,C_num1,label=lab)      
+    with open('0.1_D.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for element2, element1 in zip(C_num1, r):
+            writer.writerow([element1, element2])
+            
+    plt.xlabel("r [$m$]")
+    plt.ylabel("C [mol/$m^3$]")
+    plt.legend()
+    plt.title("Convergence de l'erreur en fonction de $\Delta$r - Comparaison code a code")
+            
 
 
 '''# ======================================================================================================== 
@@ -310,6 +389,6 @@ def MMS_Conv_Temps():
 
 print("Veuillez attendre la vérification du code est en cours.")    
 # unittest.main(module=__name__)  
-# Cac()
-MMS_Conv_Espace()
+Cac()
+# MMS_Conv_Espace()
 # MMS_Conv_Temps()
